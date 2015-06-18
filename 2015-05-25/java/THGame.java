@@ -34,7 +34,8 @@ public class THGame {
     }
     Collections.shuffle(availableCards);
     players = new ArrayList<>();
-    for (int n = 0; n < playerQuantity; n++) {
+    players.add(new Player("You"));
+    for (int n = 1; n < playerQuantity; n++) {
       players.add(new Player("" + n));
     }
     communityCards = new ArrayList<>();
