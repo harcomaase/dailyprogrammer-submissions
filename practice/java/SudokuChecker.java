@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 public class SudokuChecker {
 
   public static void main(String[] args) throws IOException {
-    for (String file : new String[]{"/tmp/langford/valid.txt", "/tmp/langford/invalid1.txt", "/tmp/langford/invalid2.txt"}) {
+    for (String file : args) {
       System.out.println(file + " is valid solution: " + new SudokuChecker(file).isValid());
     }
   }
