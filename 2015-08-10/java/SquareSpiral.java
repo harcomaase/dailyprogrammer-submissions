@@ -1,8 +1,16 @@
 public class SquareSpiral {
-  
+
   public static void main(String[] args) {
-    SquareSpiral instance = new SquareSpiral(5);
-    instance.print();
+    switch (args.length) {
+      case 2:
+        System.out.println(new SquareSpiral(Integer.parseInt(args[0])).buildSpiral(Integer.parseInt(args[1]), -2, -2));
+        break;
+      case 3:
+        System.out.println(new SquareSpiral(Integer.parseInt(args[0])).buildSpiral(-1, Integer.parseInt(args[1]), Integer.parseInt(args[2])));
+        break;
+      default:
+        throw new IllegalStateException("invalid arguments");
+    }
   }
 
   private final long[][] square;
@@ -14,28 +22,23 @@ public class SquareSpiral {
     }
     square = new long[size][size];
     this.size = size;
-    buildSpiral();
-  }
-  
-  public void print() {
-    for(long[] line : square) {
-      StringBuilder l = new StringBuilder();
-      for(long lo : line) {
-        l.append(lo).append(" ");
-      }
-      System.out.println(l.toString());
-    }
   }
 
-  private void buildSpiral() {
-    long currentNo = 1;
+  private String buildSpiral(int destPos, int destX, int destY) {
+    long currentNo = 0;
     int currentDirection = 0;
     int x = (size - 1) / 2;
     int y = x;
 
-    square[y][x] = currentNo++;
+    square[y][x] = ++currentNo;
 
     while (currentNo <= size * size) {
+      if (destPos == currentNo) {
+        return (x + 1) + " " + (y + 1);
+      }
+      if (destX == x + 1 && destY == y + 1) {
+        return currentNo + "";
+      }
       int adjacentX;
       int adjacentY;
       if (currentDirection == 0) {//right
@@ -55,11 +58,12 @@ public class SquareSpiral {
         adjacentY = y;
         adjacentX = x + 1;
       }
-      square[y][x] = currentNo++;
+      square[y][x] = ++currentNo;
       if (square[adjacentY][adjacentX] == 0) {
         currentDirection = (currentDirection + 1) % 4;
       }
     }
+    return "what? :)";
   }
 
 }
