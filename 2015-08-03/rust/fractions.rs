@@ -4,8 +4,8 @@ fn main () {
 
     let mut line = String::new();
     io::stdin().read_line(&mut line).ok().expect("failed to read line");
-
     let num_lines = line.trim().parse::<u32>().unwrap();
+
 
     let mut numerator = 0;
     let mut denominator = 1;
