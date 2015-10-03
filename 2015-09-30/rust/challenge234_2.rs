@@ -3,19 +3,18 @@ use std::fs::File;
 
 struct TreeElement {
     letter : char,
-    children : Vec<TreeElement>
+    nodes : Vec<Option<TreeElement>>
 }
 
 impl TreeElement {
-    fn add_child(&mut self, child : TreeElement) {
-        self.children.push(child);
+    fn init(&mut self, size : u16) {
+        for i in 0..size {
+            self.nodes.push(None);
+        }
     }
 }
 
 fn main() {
-
-    println!("a: {}", 'a' as u16 - 'a' as u16);
-    println!("z: {}", 'z' as u16 - 'a' as u16);
 
     let dict_words : Vec<String> = read_file("./../../enable1.txt");
 
@@ -33,37 +32,33 @@ fn main() {
 }
 
 fn create_tree(words : &Vec<String>) -> TreeElement {
-    let mut root = TreeElement {letter : '#', children : Vec::with_capacity(26)};
+    let mut root = TreeElement {letter : '#', nodes : Vec::with_capacity(26)};
+    root.init(26);
     for word in words {
-        let mut current_node = &mut root;
-        for c in word.chars() {
-            let index = char_to_index(c);
-
-            let has_child = false;
-            for tree_element in current_node.children {
-                if tree_element.letter == c {
-                    has_child = true;
-                    break;
-                }
-            }
-
-            if !has_child {
-                current_node.add_child(TreeElement {letter : c, children : Vec::with_capacity(26)});
-            }
-            current_node = &mut current_node.children[index];
-        }
+        recursive_add(&word, &mut root);
     }
-
-    return TreeElement {letter : 'a', children : Vec::with_capacity(26)};
+    return root;
 }
 
-fn has_child(tree_elements : &Vec<TreeElement>, c : char) -> bool {
-    for tree_element in tree_elements {
-        if tree_element.letter == c {
-            return true;
+fn recursive_add(word : &str, node : &mut TreeElement) {
+    let c : char = match word.chars().nth(0) {
+        None => return,
+        Some(x) => x
+    };
+    let index = char_to_index(c);
+
+    {
+        let mut opt : &Option<TreeElement> = &node.nodes[index];
+        match opt {
+            &None => {},
+            &Some(ref mut sub_node) => {recursive_add(& word[1..word.len()], &mut sub_node); return;}
         }
     }
-    return false;
+
+    let mut new_element = &mut TreeElement {letter : c, nodes : Vec::with_capacity(26)};
+    new_element.init(26);
+    node.nodes[index] = Some(*new_element);
+    recursive_add(&word[1..word.len()], &mut new_element);
 }
 
 fn char_to_index(c : char) -> usize {
