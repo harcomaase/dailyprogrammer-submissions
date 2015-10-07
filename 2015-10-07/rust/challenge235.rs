@@ -14,9 +14,10 @@ fn main() {
 }
 
 fn process(input : String) {
-    let separated_input : Vec<&str> = input.split(" ").collect();
+    let separated_input : Vec<&str> = input.trim().split(" ").collect();
     let mut total_score = 0;
-    let mut add_next = 0;
+    let mut last_one_was_spare = false;
+    let mut pre_last_one_was_spare = false;
     let mut last_score = 0;
     let mut pre_last_score = 0;
     for i in 0..separated_input.len() {
@@ -30,23 +31,24 @@ fn process(input : String) {
                 '/' => { 10 - last_score },
                 _ => {c as u16 - '0' as u16 }
             };
-            if i < 9 || current_char_count == 1 || current_char_count == 2 && last_score != 10 {
+            if (i < 9 || current_char_count == 1) || (i == 9 && current_char_count == 2 && last_score != 10) {
+                //always add, except when it's the last frame, and the first roll was a strike
                 total_score += this_score;
             }
-            if add_next > 0 {
-                add_next -= 1;
+
+            if ((last_score == 10 || last_one_was_spare) && current_char_count != 3) || (current_char_count == 3 && last_one_was_spare)  {
+                //add score again, if last one was spare or strike, but not in the last roll of the last frame
+                // ..., except when the second roll (of the last frame) was a spare
                 total_score += this_score;
-                if pre_last_score == 10 && current_char_count != 3 {
-                    total_score += this_score;
-                }
             }
-            add_next = match c {
-                'X' => { 2 },
-                '/' => { 1 },
-                _ => { add_next }
-            };
+            if pre_last_score == 10 && !pre_last_one_was_spare {
+                //add score again for strikes two rolls ago. but not if it was a -/ spare
+                total_score += this_score;
+            }
             pre_last_score = last_score;
             last_score = this_score;
+            pre_last_one_was_spare = last_one_was_spare;
+            last_one_was_spare = c == '/';
         }
     }
     println!("total score: {}", total_score);
@@ -61,7 +63,7 @@ fn read_file(name : &str) -> Vec<String> {
     let lines : Vec<&str> = file_contents.trim().split("\n").collect();
     let mut result : Vec<String> = Vec::new();
     for line in lines  {
-        result.push(String::from(line));
+        result.push(String::from(line).replace("  ", " "));
     }
     return result;
 }
