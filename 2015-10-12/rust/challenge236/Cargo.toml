@@ -1,0 +1,7 @@
+[package]
+name = "challenge236"
+version = "1.0.0"
+authors = ["misterhaase"]
+
+[dependencies]
+rand = "*"
